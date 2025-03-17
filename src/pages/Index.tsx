@@ -12,11 +12,9 @@ import {
   Mic, 
   Braces, 
   Map as MapIcon, 
-  Eye,
-  Server
+  Eye
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import FeatureCard from '@/components/features/FeatureCard';
 import DietSection from '@/components/dashboard/DietSection';
@@ -133,12 +131,6 @@ const Index = () => {
                   Help
                 </Button>
                 <Button size="sm">Get Mobile App</Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/api-setup-guide">
-                    <Server className="h-4 w-4 mr-2" />
-                    Django Setup
-                  </Link>
-                </Button>
               </div>
             </div>
           </FadeIn>
@@ -152,7 +144,6 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground mt-1">
                     This is a preview of your personalized health management dashboard. 
                     Download the mobile app to access all features and track your health on the go.
-                    Click on "Django Setup" to see how to connect this frontend to a Python/Django backend.
                   </p>
                 </div>
               </div>
