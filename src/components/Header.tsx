@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, LayoutDashboard, Settings, LogOut, Globe, Moon, Sun } from 'lucide-react';
+import { Menu, X, User, Moon, Sun } from 'lucide-react';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import FadeIn from './animations/FadeIn';
+import Logo from './Logo';
+import Navigation from './Navigation';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -56,36 +59,12 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <FadeIn delay={0.1} duration={0.6} direction="down">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-health-primary to-health-secondary flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">H</span>
-            </div>
-            <span className="font-medium text-lg">Wellnest</span>
-          </div>
+          <Link to="/">
+            <Logo />
+          </Link>
         </FadeIn>
 
-        <nav className="hidden md:flex items-center space-x-8">
-          <FadeIn delay={0.2} duration={0.6} direction="down">
-            <a href="#" className="text-sm font-medium transition-colors hover:text-health-primary">
-              Dashboard
-            </a>
-          </FadeIn>
-          <FadeIn delay={0.3} duration={0.6} direction="down">
-            <a href="#" className="text-sm font-medium transition-colors hover:text-health-primary">
-              Diet
-            </a>
-          </FadeIn>
-          <FadeIn delay={0.4} duration={0.6} direction="down">
-            <a href="#" className="text-sm font-medium transition-colors hover:text-health-primary">
-              Goals
-            </a>
-          </FadeIn>
-          <FadeIn delay={0.5} duration={0.6} direction="down">
-            <a href="#" className="text-sm font-medium transition-colors hover:text-health-primary">
-              Facilities
-            </a>
-          </FadeIn>
-        </nav>
+        <Navigation />
 
         <div className="flex items-center">
           <FadeIn delay={0.6} duration={0.6} direction="down">
@@ -112,22 +91,15 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
+                <DropdownMenuItem asChild>
+                  <Link to="/">Dashboard</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Globe className="mr-2 h-4 w-4" />
-                  <span>Language</span>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-500">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -148,34 +120,48 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md border-b border-border animate-fade-in">
           <nav className="flex flex-col space-y-4 p-6">
-            <a
-              href="#"
+            <Link
+              to="/"
               className="text-sm font-medium transition-colors hover:text-health-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Dashboard
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/diet"
               className="text-sm font-medium transition-colors hover:text-health-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Diet
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/goals"
               className="text-sm font-medium transition-colors hover:text-health-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Goals
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/facilities"
               className="text-sm font-medium transition-colors hover:text-health-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Facilities
-            </a>
+            </Link>
+            <Link
+              to="/chatbot"
+              className="text-sm font-medium transition-colors hover:text-health-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Chatbot
+            </Link>
+            <Link
+              to="/settings"
+              className="text-sm font-medium transition-colors hover:text-health-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Settings
+            </Link>
           </nav>
         </div>
       )}
