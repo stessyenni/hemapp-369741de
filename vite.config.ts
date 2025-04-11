@@ -7,18 +7,36 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   build: {
-    // Set a specific chunk size to avoid memory issues
+    // Further reduce memory usage with these options
     chunkSizeWarningLimit: 1000,
-    // More conservative settings to avoid memory problems
     sourcemap: false,
-    // Adjust build options to reduce memory usage
     minify: 'terser',
     terserOptions: {
       compress: {
-        // Reduce optimization passes
-        passes: 1
+        passes: 1,
+        drop_console: true,
+        drop_debugger: true
+      },
+      mangle: {
+        safari10: true
+      }
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            'react', 
+            'react-dom',
+            'react-router-dom',
+            '@tanstack/react-query'
+          ]
+        }
       }
     }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@capacitor/core']
   },
   server: {
     host: "::",
