@@ -6,12 +6,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
-// Create a singleton QueryClient
+// Create a singleton QueryClient with minimized options
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 0, // Reduce retry attempts to save memory
       refetchOnWindowFocus: false,
+      staleTime: Infinity, // Prevent unnecessary refetches
     },
   },
 });
@@ -21,7 +22,7 @@ const Index = lazy(() => import("./pages/Index"));
 const ApiSetupGuide = lazy(() => import("./pages/ApiSetupGuide"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Loading component for suspense fallback
+// Simplified loading component
 const Loading = () => <div className="p-4 text-center">Loading...</div>;
 
 const App = () => (
@@ -34,7 +35,6 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/api-setup-guide" element={<ApiSetupGuide />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
