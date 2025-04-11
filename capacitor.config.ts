@@ -2,7 +2,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.1fe08b173c5e476187e7793ffddf2e2d',
+  appId: 'com.lovable.wellnestdashboard',
   appName: 'wellnest-dynamic-dashboard',
   webDir: 'dist',
   server: {
