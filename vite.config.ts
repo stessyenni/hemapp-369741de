@@ -7,33 +7,40 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   build: {
-    // Further reduce memory usage with more aggressive options
-    chunkSizeWarningLimit: 1000,
+    // Extreme memory optimization
+    chunkSizeWarningLimit: 2000,
     sourcemap: false,
     minify: 'terser',
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
     terserOptions: {
       compress: {
         passes: 1,
         drop_console: true,
         drop_debugger: true,
-        ecma: 5
+        ecma: 5,
+        keep_infinity: false,
+        collapse_vars: false
       },
       mangle: {
         safari10: true,
         keep_classnames: false,
-        keep_fnames: false
+        keep_fnames: false,
+        toplevel: true
       },
       format: {
-        comments: false
+        comments: false,
+        ecma: 5
       }
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          query: ['@tanstack/react-query'],
-          ui: ['@radix-ui']
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('radix')) return 'vendor-radix';
+            if (id.includes('tanstack')) return 'vendor-tanstack';
+            return 'vendor-other';
+          }
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
