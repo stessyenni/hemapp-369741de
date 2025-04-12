@@ -7,39 +7,27 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   build: {
-    // Extreme memory optimization
+    // Super lightweight build configuration
     chunkSizeWarningLimit: 2000,
     sourcemap: false,
     minify: 'terser',
-    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+    cssMinify: true,
+    assetsInlineLimit: 4096,
     terserOptions: {
       compress: {
         passes: 1,
         drop_console: true,
-        drop_debugger: true,
-        ecma: 5,
-        keep_infinity: false,
-        collapse_vars: false
-      },
-      mangle: {
-        safari10: true,
-        keep_classnames: false,
-        keep_fnames: false,
-        toplevel: true
+        drop_debugger: true
       },
       format: {
-        comments: false,
-        ecma: 5
+        comments: false
       }
     },
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'vendor-react';
-            if (id.includes('radix')) return 'vendor-radix';
-            if (id.includes('tanstack')) return 'vendor-tanstack';
-            return 'vendor-other';
+            return 'vendor';
           }
         },
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -50,7 +38,7 @@ export default defineConfig(({ mode }) => ({
     target: 'es2015'
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: ['react', 'react-dom'],
     exclude: ['@capacitor/core']
   },
   server: {
