@@ -6,34 +6,19 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   build: {
-    chunkSizeWarningLimit: 2000,
+    // Simplified build configuration to avoid memory issues
+    minify: 'esbuild', // Using esbuild instead of terser (less memory intensive)
     sourcemap: false,
-    minify: 'terser',
-    cssMinify: true,
-    assetsInlineLimit: 4096,
-    terserOptions: {
-      compress: {
-        passes: 1,
-        drop_console: true,
-        drop_debugger: true
-      },
-      format: {
-        comments: false
-      }
-    },
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
             return 'vendor';
           }
-        },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        }
       }
-    },
-    target: 'es2015'
+    }
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
