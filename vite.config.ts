@@ -22,7 +22,10 @@ export default defineConfig(({ mode }) => ({
     // Set lower memory usage thresholds
     assetsInlineLimit: 2048, // Lower threshold for inlining assets as base64
     cssCodeSplit: true, // Split CSS into smaller chunks
-    target: 'es2018' // Target more widely supported JS version
+    target: 'es2018', // Target more widely supported JS version
+    // Additional memory optimizations
+    emptyOutDir: true,
+    reportCompressedSize: false // Skip size reporting to reduce memory usage
   },
   optimizeDeps: {
     // Be explicit about dependencies to optimize
@@ -39,21 +42,11 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Configure SWC for better performance and lower memory usage
-      swcOptions: {
-        jsc: {
-          parser: {
-            syntax: 'typescript',
-            tsx: true,
-          },
-          transform: {
-            react: {
-              runtime: 'automatic',
-              refresh: mode === 'development',
-            },
-          },
-        },
-      }
+      // Use basic React plugin options without custom SWC options
+      // that were causing the TS2353 error
+      tsDecorators: false,
+      jsxImportSource: undefined,
+      react: mode === 'development'
     }),
     mode === 'development' &&
     componentTagger(),
