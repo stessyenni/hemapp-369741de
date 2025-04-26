@@ -60,7 +60,7 @@ const Header = () => {
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-health-primary to-health-secondary flex items-center justify-center">
               <span className="text-white font-semibold text-sm">H</span>
             </div>
-            <span className="font-medium text-lg">Wellnest</span>
+            <span className="font-medium text-lg">Hemapp</span>
           </div>
         </FadeIn>
 
