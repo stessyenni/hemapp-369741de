@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => ({
       // Fixed plugin options to match the expected types
       tsDecorators: false,
       jsxImportSource: undefined,
-      refresh: mode === 'development'
+      plugins: []
     }),
     mode === 'development' &&
     componentTagger(),
