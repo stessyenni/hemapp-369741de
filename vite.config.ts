@@ -42,11 +42,10 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Use basic React plugin options without custom SWC options
-      // that were causing the TS2353 error
+      // Fixed plugin options to match the expected types
       tsDecorators: false,
       jsxImportSource: undefined,
-      react: mode === 'development'
+      refresh: mode === 'development'
     }),
     mode === 'development' &&
     componentTagger(),
