@@ -1,3 +1,4 @@
+
 """
 URL configuration for hemapp_backend project.
 
@@ -16,14 +17,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/health-check/', health_check, name='health_check'),
     path('api/auth/', include('authentication.urls')),
     path('api/diet/', include('diet.urls')),
     path('api/health/', include('health_tracking.urls')),
     path('api/facilities/', include('facilities.urls')),
     path('api/chatbot/', include('chatbot.urls')),
-    path('api/settings/', include('settings.urls')),
     path('api/settings/', include('settings.urls')),
 ]
