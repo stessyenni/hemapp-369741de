@@ -8,10 +8,7 @@ const rootElement = document.getElementById("root");
 
 // Ensure the element exists before rendering
 if (rootElement) {
-  // Use a deferred rendering to reduce initial memory pressure
-  setTimeout(() => {
-    createRoot(rootElement).render(<App />);
-  }, 0);
+  createRoot(rootElement).render(<App />);
 } else {
   console.error("Root element not found. Cannot mount React application.");
 }
