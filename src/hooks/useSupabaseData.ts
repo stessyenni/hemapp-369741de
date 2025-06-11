@@ -3,14 +3,17 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
 
-export const useSupabaseData = <T>(
-  table: string,
+type Tables = Database['public']['Tables'];
+
+export const useSupabaseData = <T extends keyof Tables>(
+  table: T,
   select: string = '*',
   dependencies: any[] = []
 ) => {
   const { user } = useAuth();
-  const [data, setData] = useState<T[]>([]);
+  const [data, setData] = useState<Tables[T]['Row'][]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,11 +58,11 @@ export const useSupabaseData = <T>(
   return { data, loading, error, refetch };
 };
 
-export const useSupabaseInsert = (table: string) => {
+export const useSupabaseInsert = <T extends keyof Tables>(table: T) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const insert = async (data: any) => {
+  const insert = async (data: Omit<Tables[T]['Insert'], 'user_id' | 'id' | 'created_at'>) => {
     if (!user) {
       toast.error('You must be logged in to perform this action');
       return { error: 'Not authenticated' };
@@ -72,7 +75,7 @@ export const useSupabaseInsert = (table: string) => {
         .insert({
           ...data,
           user_id: user.id,
-        });
+        } as Tables[T]['Insert']);
 
       if (error) {
         throw error;
