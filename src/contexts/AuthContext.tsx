@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Capacitor } from '@capacitor/core';
 
 interface AuthContextType {
   user: User | null;
@@ -30,29 +31,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
+        
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Mobile-specific logging
+        if (Capacitor.isNativePlatform()) {
+          console.log('Mobile auth event:', event, 'User:', !!session?.user);
+        }
       }
     );
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      if (Capacitor.isNativePlatform()) {
+        console.log('Initial mobile session:', !!session?.user);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      // Use different redirect URL for mobile vs web
+      const redirectUrl = Capacitor.isNativePlatform() 
+        ? 'hemapp://auth-callback'
+        : `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({
         email,
