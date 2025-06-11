@@ -1,205 +1,201 @@
 
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Apple, Carrot, Coffee } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import GlassmorphicCard from '@/components/ui-elements/GlassmorphicCard';
-import FadeIn from '@/components/animations/FadeIn';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Utensils, Plus, Loader2 } from 'lucide-react';
+import { useSupabaseData, useSupabaseInsert } from '@/hooks/useSupabaseData';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Sample data
-const nutritionData = [
-  { day: 'Mon', calories: 2100, protein: 120, carbs: 180, fat: 60 },
-  { day: 'Tue', calories: 1950, protein: 115, carbs: 160, fat: 55 },
-  { day: 'Wed', calories: 2200, protein: 130, carbs: 190, fat: 65 },
-  { day: 'Thu', calories: 2050, protein: 125, carbs: 170, fat: 60 },
-  { day: 'Fri', calories: 2150, protein: 128, carbs: 175, fat: 62 },
-  { day: 'Sat', calories: 1900, protein: 110, carbs: 150, fat: 50 },
-  { day: 'Sun', calories: 2000, protein: 120, carbs: 165, fat: 58 },
-];
-
-const mealItems = [
-  {
-    id: 1,
-    name: 'Greek Yogurt Bowl',
-    calories: 320,
-    icon: <Apple className="h-5 w-5" />,
-    time: 'Breakfast',
-    color: 'bg-blue-50 dark:bg-blue-900/20',
-  },
-  {
-    id: 2,
-    name: 'Grilled Chicken Salad',
-    calories: 420,
-    icon: <Carrot className="h-5 w-5" />,
-    time: 'Lunch',
-    color: 'bg-green-50 dark:bg-green-900/20',
-  },
-  {
-    id: 3,
-    name: 'Protein Smoothie',
-    calories: 280,
-    icon: <Coffee className="h-5 w-5" />,
-    time: 'Snack',
-    color: 'bg-purple-50 dark:bg-purple-900/20',
-  },
-];
-
-interface MacroCircleProps {
-  value: number;
-  max: number;
-  label: string;
-  color: string;
-  className?: string;
+interface DietEntry {
+  id: string;
+  meal_name: string;
+  meal_type: string;
+  calories: number;
+  protein: string;
+  fiber: string;
+  logged_at: string;
 }
 
-const MacroCircle = ({ value, max, label, color, className }: MacroCircleProps) => {
-  const percentage = (value / max) * 100;
-  
-  return (
-    <div className={cn("flex flex-col items-center", className)}>
-      <div className="relative w-16 h-16">
-        <svg className="w-16 h-16" viewBox="0 0 100 100">
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="8"
-            className="text-muted/30"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke={color}
-            strokeWidth="8"
-            strokeDasharray={`${percentage * 2.51} 251`}
-            strokeLinecap="round"
-            transform="rotate(-90 50 50)"
-            className="transition-all duration-1000 ease-out"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center text-sm font-medium">
-          {value}g
-        </div>
-      </div>
-      <span className="mt-2 text-xs text-muted-foreground">{label}</span>
-    </div>
-  );
-};
-
 const DietSection = () => {
+  const { user } = useAuth();
+  const { data: dietEntries, loading, refetch } = useSupabaseData<DietEntry>('diet_entries');
+  const { insert, loading: inserting } = useSupabaseInsert('diet_entries');
+
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    meal_name: '',
+    meal_type: 'breakfast',
+    calories: '',
+    protein: '',
+    fiber: '',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const { error } = await insert({
+      meal_name: formData.meal_name,
+      meal_type: formData.meal_type,
+      calories: parseInt(formData.calories) || null,
+      protein: formData.protein || null,
+      fiber: formData.fiber || null,
+    });
+
+    if (!error) {
+      setFormData({
+        meal_name: '',
+        meal_type: 'breakfast',
+        calories: '',
+        protein: '',
+        fiber: '',
+      });
+      setShowForm(false);
+      refetch();
+    }
+  };
+
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">
+            Please sign in to track your diet
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <FadeIn delay={0.1} className="lg:col-span-2">
-          <GlassmorphicCard className="p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium">Nutrition Tracking</h3>
-              <div className="text-xs text-muted-foreground">Last 7 days</div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Utensils className="h-5 w-5" />
+                Diet Tracking
+              </CardTitle>
+              <CardDescription>
+                Track your meals and nutrition throughout the day
+              </CardDescription>
             </div>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={nutritionData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} />
-                  <YAxis hide={true} />
-                  <Tooltip
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="glass-card p-3 text-xs">
-                            <p className="font-medium">{label}</p>
-                            <p className="text-health-primary">{`Calories: ${payload[0].value}`}</p>
-                            <p className="text-health-secondary">{`Protein: ${payload[1].value}g`}</p>
-                            <p className="text-blue-500">{`Carbs: ${payload[2].value}g`}</p>
-                            <p className="text-amber-500">{`Fat: ${payload[3].value}g`}</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
+            <Button onClick={() => setShowForm(!showForm)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Meal
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {showForm && (
+            <form onSubmit={handleSubmit} className="space-y-4 mb-6 p-4 bg-muted rounded-lg">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="meal_name">Meal Name</Label>
+                  <Input
+                    id="meal_name"
+                    value={formData.meal_name}
+                    onChange={(e) => setFormData({ ...formData, meal_name: e.target.value })}
+                    placeholder="e.g., Grilled Chicken Salad"
+                    required
                   />
-                  <Bar dataKey="calories" fill="hsl(var(--health-primary)/0.7)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="protein" fill="hsl(var(--health-secondary)/0.7)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="carbs" fill="hsl(221, 83%, 70%)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="fat" fill="hsl(36, 100%, 65%)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </GlassmorphicCard>
-        </FadeIn>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="meal_type">Meal Type</Label>
+                  <Select
+                    value={formData.meal_type}
+                    onValueChange={(value) => setFormData({ ...formData, meal_type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select meal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="snack">Snack</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="calories">Calories</Label>
+                  <Input
+                    id="calories"
+                    type="number"
+                    value={formData.calories}
+                    onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
+                    placeholder="300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="protein">Protein (g)</Label>
+                  <Input
+                    id="protein"
+                    value={formData.protein}
+                    onChange={(e) => setFormData({ ...formData, protein: e.target.value })}
+                    placeholder="25"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fiber">Fiber (g)</Label>
+                  <Input
+                    id="fiber"
+                    value={formData.fiber}
+                    onChange={(e) => setFormData({ ...formData, fiber: e.target.value })}
+                    placeholder="5"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={inserting}>
+                  {inserting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    'Add Meal'
+                  )}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          )}
 
-        <FadeIn delay={0.2}>
-          <GlassmorphicCard className="p-6 h-full">
-            <h3 className="font-medium mb-4">Today's Macros</h3>
-            <div className="mt-2 mb-6">
-              <div className="flex items-center justify-center space-x-2 mb-3">
-                <div className="text-3xl font-bold">1,864</div>
-                <div className="text-sm text-muted-foreground">calories</div>
-              </div>
-              <div className="w-full bg-muted/30 h-2 rounded-full overflow-hidden">
-                <div className="h-full bg-health-primary rounded-full" style={{ width: '75%' }}></div>
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>0</span>
-                <span>Goal: 2,400</span>
-              </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
             </div>
-            
-            <div className="flex justify-around mt-8">
-              <MacroCircle 
-                value={118} 
-                max={150} 
-                label="Protein" 
-                color="hsl(var(--health-secondary))" 
-              />
-              <MacroCircle 
-                value={162} 
-                max={240} 
-                label="Carbs" 
-                color="hsl(221, 83%, 70%)" 
-              />
-              <MacroCircle 
-                value={54} 
-                max={80} 
-                label="Fat" 
-                color="hsl(36, 100%, 65%)" 
-              />
-            </div>
-          </GlassmorphicCard>
-        </FadeIn>
-      </div>
-
-      <div className="mt-6">
-        <FadeIn delay={0.3}>
-          <GlassmorphicCard className="p-6">
-            <div className="flex justify-between items-center mb-5">
-              <h3 className="font-medium">Today's Meals</h3>
-              <button className="text-xs text-health-primary hover:text-health-primary/80 transition-colors">
-                View all
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {mealItems.map((meal, index) => (
-                <FadeIn key={meal.id} delay={0.1 * (index + 1)}>
-                  <div className={cn("p-4 rounded-lg transition-all duration-300 hover:translate-y-[-2px]", meal.color)}>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">{meal.time}</div>
-                        <div className="font-medium">{meal.name}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{meal.calories} calories</div>
-                      </div>
-                      <div className="text-health-primary">{meal.icon}</div>
-                    </div>
+          ) : dietEntries.length > 0 ? (
+            <div className="space-y-3">
+              {dietEntries.map((entry) => (
+                <div key={entry.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div>
+                    <h4 className="font-medium">{entry.meal_name}</h4>
+                    <p className="text-sm text-muted-foreground capitalize">
+                      {entry.meal_type} • {entry.calories ? `${entry.calories} cal` : 'No calories logged'}
+                    </p>
                   </div>
-                </FadeIn>
+                  <div className="text-right text-sm text-muted-foreground">
+                    {new Date(entry.logged_at).toLocaleDateString()}
+                  </div>
+                </div>
               ))}
             </div>
-          </GlassmorphicCard>
-        </FadeIn>
-      </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-8">
+              No meals logged yet. Add your first meal to get started!
+            </p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
