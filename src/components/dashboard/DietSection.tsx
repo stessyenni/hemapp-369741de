@@ -8,20 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Utensils, Plus, Loader2 } from 'lucide-react';
 import { useSupabaseData, useSupabaseInsert } from '@/hooks/useSupabaseData';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Database } from '@/integrations/supabase/types';
 
-interface DietEntry {
-  id: string;
-  meal_name: string;
-  meal_type: string;
-  calories: number;
-  protein: string;
-  fiber: string;
-  logged_at: string;
-}
+type DietEntry = Database['public']['Tables']['diet_entries']['Row'];
 
 const DietSection = () => {
   const { user } = useAuth();
-  const { data: dietEntries, loading, refetch } = useSupabaseData<DietEntry>('diet_entries');
+  const { data: dietEntries, loading, refetch } = useSupabaseData('diet_entries');
   const { insert, loading: inserting } = useSupabaseInsert('diet_entries');
 
   const [showForm, setShowForm] = useState(false);
