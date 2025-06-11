@@ -23,7 +23,7 @@ export const useSupabaseData = (
 
     try {
       setLoading(true);
-      const { data: result, error } = await supabase
+      const { data: result, error } = await (supabase as any)
         .from(table)
         .select(select)
         .eq('user_id', user.id)
@@ -67,7 +67,7 @@ export const useSupabaseInsert = (table: string) => {
 
     try {
       setLoading(true);
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from(table)
         .insert({
           ...data,
