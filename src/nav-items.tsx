@@ -1,12 +1,12 @@
 
-import { Index } from "@/pages/Index";
-import { Auth } from "@/pages/Auth";
-import { Dashboard } from "@/pages/Dashboard";
-import { Diet } from "@/pages/Diet";
-import { Goals } from "@/pages/Goals";
-import { Chat } from "@/pages/Chat";
-import { Maps } from "@/pages/Maps";
-import { Settings } from "@/pages/Settings";
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import Diet from "@/pages/Diet";
+import Goals from "@/pages/Goals";
+import Chat from "@/pages/Chat";
+import Maps from "@/pages/Maps";
+import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
 
 export const navItems = [
