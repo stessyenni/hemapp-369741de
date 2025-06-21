@@ -13,9 +13,11 @@ import {
   ActivityIcon,
   DropletIcon,
   ClockIcon,
-  AwardIcon
+  AwardIcon,
+  PlusIcon,
+  BarChart3Icon
 } from "lucide-react";
-import AppHeader from "@/components/AppHeader";
+import DynamicHeader from "@/components/DynamicHeader";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -38,7 +40,8 @@ const Dashboard = () => {
       icon: <TargetIcon className="h-5 w-5" />,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      change: "+12%"
+      change: "+12%",
+      gradient: "from-blue-500 to-blue-600"
     },
     {
       title: "Weight Progress",
@@ -48,7 +51,8 @@ const Dashboard = () => {
       icon: <TrendingUpIcon className="h-5 w-5" />,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      change: "-0.5kg"
+      change: "-0.5kg",
+      gradient: "from-green-500 to-green-600"
     },
     {
       title: "Daily Steps",
@@ -58,7 +62,8 @@ const Dashboard = () => {
       icon: <ActivityIcon className="h-5 w-5" />,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
-      change: "+15%"
+      change: "+15%",
+      gradient: "from-purple-500 to-purple-600"
     },
     {
       title: "Water Intake",
@@ -68,47 +73,56 @@ const Dashboard = () => {
       icon: <DropletIcon className="h-5 w-5" />,
       color: "text-cyan-600",
       bgColor: "bg-cyan-50",
-      change: "60%"
+      change: "60%",
+      gradient: "from-cyan-500 to-cyan-600"
     }
   ];
 
   const quickActions = [
     {
-      title: "Log Your Meal",
-      description: "Track your nutrition",
+      title: "Log Meal",
+      description: "Track nutrition",
       action: () => navigate("/diet"),
       color: "nature-gradient",
-      icon: <TargetIcon className="h-5 w-5" />
+      icon: <PlusIcon className="h-5 w-5" />
     },
     {
-      title: "Update Goals",
-      description: "Modify health targets",
+      title: "Set Goals",
+      description: "Health targets",
       action: () => navigate("/goals"),
       color: "royal-gradient",
       icon: <AwardIcon className="h-5 w-5" />
     },
     {
-      title: "AI Assistant",
-      description: "Get health advice",
+      title: "AI Chat",
+      description: "Get advice",
       action: () => navigate("/chat"),
       color: "purple-gradient",
       icon: <HeartIcon className="h-5 w-5" />
+    },
+    {
+      title: "Analytics",
+      description: "View reports",
+      action: () => navigate("/profile"),
+      color: "bg-gradient-to-r from-orange-500 to-red-500",
+      icon: <BarChart3Icon className="h-5 w-5" />
     }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <AppHeader />
+      <DynamicHeader />
       
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 md:p-6 space-y-6">
         {/* Welcome Section */}
         <div className="fade-in">
           <div className="health-gradient rounded-2xl p-6 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative z-10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
-                  <p className="text-white/90 text-lg">
+              <div className="flex flex-col md:flex-row items-center justify-between">
+                <div className="text-center md:text-left mb-4 md:mb-0">
+                  <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome Back!</h1>
+                  <p className="text-white/90 text-base md:text-lg">
                     {currentTime.toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -116,48 +130,55 @@ const Dashboard = () => {
                       day: 'numeric' 
                     })}
                   </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-white/80 flex items-center">
-                    <ClockIcon className="h-4 w-4 mr-1" />
+                  <p className="text-white/80 text-sm md:text-base mt-1">
+                    <ClockIcon className="h-4 w-4 inline mr-1" />
                     {currentTime.toLocaleTimeString()}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="mb-3">
+                    <div className="text-3xl md:text-4xl font-bold">{healthScore}%</div>
+                    <div className="text-white/80 text-sm">Health Score</div>
                   </div>
-                  <div className="mt-2">
-                    <Badge className="bg-white/20 text-white border-white/30">
-                      Health Score: {healthScore}%
-                    </Badge>
-                  </div>
+                  <Badge className="bg-white/20 text-white border-white/30 px-4 py-1">
+                    Excellent Progress!
+                  </Badge>
                 </div>
               </div>
             </div>
-            <div className="absolute inset-0 bg-black/10"></div>
           </div>
         </div>
 
         {/* Health Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 fade-in">
           {healthMetrics.map((metric, index) => (
-            <Card key={index} className="scale-hover border-0 shadow-lg">
+            <Card key={index} className="scale-hover border-0 shadow-lg hover:shadow-xl transition-all duration-200">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className={`p-2 rounded-lg ${metric.bgColor}`}>
                     <div className={metric.color}>{metric.icon}</div>
                   </div>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs bg-white">
                     {metric.change}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-600">{metric.title}</p>
-                  <p className="text-2xl font-bold">{metric.value}</p>
+                  <p className="text-xs md:text-sm font-medium text-gray-600">{metric.title}</p>
+                  <p className="text-lg md:text-2xl font-bold">{metric.value}</p>
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>Progress</span>
+                      <span>Goal</span>
                       <span>{metric.target}</span>
                     </div>
-                    <Progress value={metric.progress} className="h-2" />
+                    <div className="relative">
+                      <Progress value={metric.progress} className="h-2" />
+                      <div 
+                        className={`absolute top-0 left-0 h-2 bg-gradient-to-r ${metric.gradient} rounded-full transition-all duration-500`}
+                        style={{ width: `${metric.progress}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -165,31 +186,31 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions and Summary */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Quick Actions */}
-          <Card className="lg:col-span-2 scale-hover border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl">Quick Actions</CardTitle>
-              <CardDescription>Manage your health journey</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickActions.map((action, index) => (
-                <Button
-                  key={index}
-                  onClick={action.action}
-                  className={`${action.color} h-24 flex-col space-y-2 text-white border-0 hover:scale-105 transition-transform`}
-                >
-                  {action.icon}
-                  <div className="text-center">
-                    <div className="font-medium">{action.title}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
-                  </div>
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
+        {/* Quick Actions */}
+        <Card className="scale-hover border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-lg md:text-xl">Quick Actions</CardTitle>
+            <CardDescription>Manage your health journey efficiently</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <Button
+                key={index}
+                onClick={action.action}
+                className={`${action.color} h-20 md:h-24 flex-col space-y-2 text-white border-0 hover:scale-105 transition-transform shadow-lg`}
+              >
+                {action.icon}
+                <div className="text-center">
+                  <div className="font-medium text-sm">{action.title}</div>
+                  <div className="text-xs opacity-90">{action.description}</div>
+                </div>
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
 
+        {/* Today's Summary and Recent Activities */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Today's Summary */}
           <Card className="scale-hover border-0 shadow-lg">
             <CardHeader>
@@ -226,37 +247,37 @@ const Dashboard = () => {
               </Button>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Recent Activities */}
-        <Card className="fade-in scale-hover border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-            <CardDescription>Your latest health activities and achievements</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { activity: "Logged breakfast - Oatmeal with berries", time: "2 hours ago", type: "diet" },
-                { activity: "Completed 30min workout", time: "4 hours ago", type: "exercise" },
-                { activity: "Reached daily water goal", time: "6 hours ago", type: "hydration" },
-                { activity: "Updated weight - 68.2kg", time: "1 day ago", type: "tracking" }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <div className={`w-2 h-2 rounded-full ${
-                    item.type === 'diet' ? 'bg-green-500' :
-                    item.type === 'exercise' ? 'bg-blue-500' :
-                    item.type === 'hydration' ? 'bg-cyan-500' : 'bg-purple-500'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{item.activity}</p>
-                    <p className="text-xs text-gray-500">{item.time}</p>
+          {/* Recent Activities */}
+          <Card className="scale-hover border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Recent Activities</CardTitle>
+              <CardDescription>Your latest health activities</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[
+                  { activity: "Logged breakfast - Oatmeal with berries", time: "2 hours ago", type: "diet" },
+                  { activity: "Completed 30min workout", time: "4 hours ago", type: "exercise" },
+                  { activity: "Reached daily water goal", time: "6 hours ago", type: "hydration" },
+                  { activity: "Updated weight - 68.2kg", time: "1 day ago", type: "tracking" }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className={`w-2 h-2 rounded-full ${
+                      item.type === 'diet' ? 'bg-green-500' :
+                      item.type === 'exercise' ? 'bg-blue-500' :
+                      item.type === 'hydration' ? 'bg-cyan-500' : 'bg-purple-500'
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{item.activity}</p>
+                      <p className="text-xs text-gray-500">{item.time}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
