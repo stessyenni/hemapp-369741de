@@ -65,6 +65,3 @@ export const navItems = [
     protected: true,
   },
 ];
-
-<lov-add-dependency>@radix-ui/react-avatar@latest</lov-add-dependency>
-<lov-add-dependency>@radix-ui/react-progress@latest</lov-add-dependency>
